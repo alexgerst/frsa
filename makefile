@@ -10,14 +10,14 @@ DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 _OBJ = frsa.o 
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
-
 $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
-		$(CC) -c -o $@ $< $(CFLAGS)
+	mkdir -p $(@D)
+	$(CC) -c -o $@ $< $(CFLAGS)
 
 frsa: $(OBJ)
-		gcc -o $@ $^ $(CFLAGS)
+	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
 
 clean:
-		rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
+	rm -f $(ODIR)/*.o *~ core $(INCDIR)/*~ 
