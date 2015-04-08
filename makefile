@@ -2,7 +2,7 @@ SDIR=src
 IDIR =inc
 ODIR=obj
 CC=gcc
-CFLAGS=-I$(IDIR)
+CFLAGS=-I$(IDIR) -lm
 
 _DEPS = frsa.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))

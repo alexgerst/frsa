@@ -1,15 +1,7 @@
-#include <stdio.h> 
-#include <stdlib.h> 
-#include <math.h> 
-#include <string.h> 
+#include <frsa.h>
 
 int p,q,n,t,flag,e[100],d[100],temp[100],j,m[100],en[100],i;
 char msg[100];
-int prime(int);
-void ce();
-int cd(int);
-void encrypt();
-void decrypt();
 
 void main()
 {
@@ -40,8 +32,11 @@ void main()
     printf("\nPOSSIBLE VALUES OF e AND d ARE\n");
     for(i=0;i<j-1;i++)
     printf("\n%d\t%d",e[i],d[i]);
+    printf("\n");
     encrypt();
+    printf("\n");
     decrypt();
+    printf("\n");
 }
 
 int prime(int pr)
