@@ -14,7 +14,7 @@ $(ODIR)/%.o: $(SDIR)/%.c $(DEPS)
 	mkdir -p $(@D)
 	$(CC) -c -o $@ $< $(CFLAGS)
 
-frsa: $(OBJ)
+frsa.out: $(OBJ)
 	gcc -o $@ $^ $(CFLAGS)
 
 .PHONY: clean
