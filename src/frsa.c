@@ -1,14 +1,37 @@
 #include <frsa.h>
 
-RSA *createRSAWithFilename(char *filename, int public)
+#define FRSA_BITS 2048
+
+RSA *generateRSA()
 {
-    FILE *fp = fopen(filename, "rb");
+    BIGNUM *bne;
+    RSA *rsa;
+    
+    bne = BN_new();
+    BN_set_word(bne, RSA_F4);
+
+    rsa = RSA_new();
+    RSA_generate_key_ex(rsa, FRSA_BITS, bne, NULL);
+
+    free(bne);
+
+    return rsa;
+}
+
+RSA *readRSAFromFile(char *filename, int public)
+{
+    RSA *rsa;
+    FILE *fp;
+
+    fp = fopen(filename, "rb");
+    
     if (fp == NULL)
     {
         printf("Unable to open file %s \n", filename);
         return NULL;    
     }
-    RSA *rsa = RSA_new();
+
+    rsa = RSA_new();
 
     if (public)
     {
@@ -19,10 +42,42 @@ RSA *createRSAWithFilename(char *filename, int public)
         PEM_read_RSAPrivateKey(fp, &rsa, NULL, NULL);
     }
 
+    free(fp);
+
     return rsa;
+}
+
+void *writeRSAPublicToFile(RSA *rsa, char *filename)
+{
+    BIO *bp;
+
+    bp = BIO_new_file(filename, "w+");
+    PEM_write_bio_RSAPublicKey(bp, rsa);
+    
+    free(bp);
+}
+
+void *writeRSAPrivateToFile(RSA *rsa, char *filename)
+{
+    BIO *bp;
+
+    bp = BIO_new_file(filename, "w+");
+    PEM_write_bio_RSAPrivateKey(bp, rsa, NULL, NULL, 0, NULL, NULL);
+
+    free(bp);
 }
 
 void main()
 {
-    printf("FRSA\n");
+    RSA *rsa;
+    
+    printf("FRSA v0.1\n");
+
+    rsa = generateRSA();
+    writeRSAPublicToFile(rsa, "pub.pem");
+    writeRSAPrivateToFile(rsa, "priv.pem");
+
+    free(rsa);
+
+    printf("Success, exiting.\n");
 }
