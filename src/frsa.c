@@ -24,5 +24,5 @@ RSA *createRSAWithFilename(char *filename, int public)
 
 void main()
 {
-    printf("frsa");
+    printf("FRSA\n");
 }

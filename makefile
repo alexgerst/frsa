@@ -21,4 +21,4 @@ frsa.out: $(OBJ)
 
 clean:
 	rm -rf $(ODIR)
-	rm frsa 
+	rm frsa.out 
