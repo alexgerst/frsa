@@ -1,3 +1,6 @@
+# FRSA specific files
+frsa
+
 # Object files
 *.o
 *.ko

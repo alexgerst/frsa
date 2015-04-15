@@ -1,93 +1,76 @@
 #include <frsa.h>
 
-#define FRSA_BITS 2048
-
-RSA *generateRSA()
+// argp parameters
+const char *argp_program_version = 
+    "frsa 0.1";
+const char *argp_program_bug_address = 
+    "<alexgerst93@gmail.com>";
+static char doc[] = 
+    "fRSA -- a utility for fingerprint RSA cryptography\vValid commands:\n\n  private\t\tgenerates private key to OUTFILE\n  public\t\tcomputes public key to OUTFILE based on PRIVKEY\n  encrypt\t\tencrypts INFILE to OUTFILE based on PUBKEY\n  decrypt\t\tdecrypts INFILE to OUTFILE based on PRIVKEY";
+static char args_doc[] =
+    "COMMAND";
+static struct argp_option options[] = {
+    {"in",      'i',    "INFILE",   0,  "Input file" },
+    {"out",     'o',    "OUTFILE",  0,  "Output file" },
+    {"priv",    'v',    "PRIVKEY", 0,   "Private key" },
+    {"pub",     'b',    "PUBKEY",  0,   "Public key" },
+    {0}
+};
+struct arguments
 {
-    BIGNUM *bne;
-    RSA *rsa;
-    
-    bne = BN_new();
-    BN_set_word(bne, RSA_F4);
+    char *cmd;
+    char *infile;
+    char *outfile;
+    char *privkey;
+    char *pubkey;
+};
 
-    rsa = RSA_new();
-    RSA_generate_key_ex(rsa, FRSA_BITS, bne, NULL);
-
-    free(bne);
-
-    return rsa;
-}
-
-RSA *readRSAFromFile(char *filename, int public)
+// parse a single option
+static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
-    RSA *rsa;
-    FILE *fp;
+    struct arguments *arguments = state->input;
 
-    fp = fopen(filename, "rb");
-    
-    if (fp == NULL)
+    switch (key)
     {
-        printf("Unable to open file %s \n", filename);
-        return NULL;    
+        case 'i':
+            arguments->infile = arg;
+            break;
+        case 'o':
+            arguments->outfile = arg;
+            break;
+        case 'v':
+            arguments->privkey = arg;
+            break;
+        case 'b':
+            arguments->pubkey = arg;
+            break;
+        case ARGP_KEY_NO_ARGS:
+            argp_usage(state);
+        case ARGP_KEY_ARG:
+            if (state->arg_num > 0)
+                argp_usage(state);
+            else
+                arguments->cmd = arg;
+            break;
+        default:
+            return ARGP_ERR_UNKNOWN;
     }
 
-    rsa = RSA_new();
-
-    if (public)
-    {
-        PEM_read_RSA_PUBKEY(fp, &rsa, NULL, NULL);
-    }
-    else
-    {
-        PEM_read_RSAPrivateKey(fp, &rsa, NULL, NULL);
-    }
-
-    free(fp);
-
-    return rsa;
+    return 0;
 }
 
-void *writeRSAPublicToFile(RSA *rsa, char *filename)
-{
-    BIO *bp;
+// argp parser
+static struct argp argp = {options, parse_opt, args_doc, doc};
 
-    bp = BIO_new_file(filename, "w+");
-    PEM_write_bio_RSAPublicKey(bp, rsa);
+// main function
+void main(int argc, char **argv)
+{
+    struct arguments arguments;
+
+    arguments.infile = "-";
+    arguments.outfile = "-";
+    arguments.privkey = "-";
+    arguments.pubkey = "-";
     
-    free(bp);
-}
-
-void *writeRSAPrivateToFile(RSA *rsa, char *filename)
-{
-    BIO *bp;
-
-    bp = BIO_new_file(filename, "w+");
-    PEM_write_bio_RSAPrivateKey(bp, rsa, NULL, NULL, 0, NULL, NULL);
-
-    free(bp);
-}
-
-FP *generateFP()
-{
-    return NULL;
-}
-
-RSA *applyFPToRSA(RSA *rsa, FP *fp)
-{
-    return rsa;
-}
-
-void main()
-{
-    RSA *rsa;
-    
-    printf("FRSA v0.1\n");
-
-    rsa = generateRSA();
-    writeRSAPublicToFile(rsa, "pub.pem");
-    writeRSAPrivateToFile(rsa, "priv.pem");
-
-    free(rsa);
-
-    printf("Success, exiting.\n");
+    argp_parse (&argp, argc, argv, 0, 0, &arguments);
 }
