@@ -67,6 +67,16 @@ void *writeRSAPrivateToFile(RSA *rsa, char *filename)
     free(bp);
 }
 
+FP *generateFP()
+{
+    return NULL;
+}
+
+RSA *applyFPToRSA(RSA *rsa, FP *fp)
+{
+    return rsa;
+}
+
 void main()
 {
     RSA *rsa;
