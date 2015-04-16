@@ -66,28 +66,80 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 // argp parser
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
+// error handler
+void frsa_error(char *str)
+{
+    printf("frsa: %s\nTry `frsa --help' or `frsa --usage' for more information.\n", str);
+    exit(1);
+}
+
 // command - private
 void cmd_private(struct args args)
 {
-    printf("private\n");
+    if (args.outfile == NULL)
+    {
+        frsa_error("'private' command requires outfile");
+    }
+
+    RSA *rsa;
+
+    rsa = generateRSA();
+
+    writeRSAPrivateToFile(rsa, args.outfile);
 }
 
 // command - public
 void cmd_public(struct args args)
 {
-    printf("public\n");
+    if (args.outfile == NULL)
+    {
+        frsa_error("'public' command requires outfile");
+    }
+    
+    if (args.privkey == NULL)
+    {
+        frsa_error("'public' command requires privkey");
+    }
 }
 
 // command - encrypt
 void cmd_encrypt(struct args args)
 {
-    printf("encrypt\n");
+    if (args.infile == NULL)
+    {
+        frsa_error("'encrypt' command requires infile");
+    }
+    
+    if (args.outfile == NULL)
+    {
+        frsa_error("'encrypt' command requires outfile");
+    }
+    
+    if (args.pubkey == NULL)
+    {
+        frsa_error("'encrypt' command requires pubkey");
+    }
+
 }
 
 // command - decrypt
 void cmd_decrypt(struct args args)
 {
-    printf("decrypt\n");
+    if (args.infile == NULL)
+    {
+        frsa_error("'decrypt' command requires infile");
+    }
+    
+    if (args.outfile == NULL)
+    {
+        frsa_error("'decrypt' command requires outfile");
+    }
+    
+    if (args.privkey == NULL)
+    {
+        frsa_error("'decrypt' command requires privkey");
+    }
+
 }
 
 // main function
