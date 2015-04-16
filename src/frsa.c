@@ -16,7 +16,7 @@ static struct argp_option options[] = {
     {"pub",     'b',    "PUBKEY",  0,   "Public key" },
     {0}
 };
-struct arguments
+struct args
 {
     char *cmd;
     char *infile;
@@ -28,29 +28,33 @@ struct arguments
 // parse a single option
 static error_t parse_opt(int key, char *arg, struct argp_state *state)
 {
-    struct arguments *arguments = state->input;
+    struct args *args = state->input;
 
     switch (key)
     {
         case 'i':
-            arguments->infile = arg;
+            args->infile = arg;
             break;
         case 'o':
-            arguments->outfile = arg;
+            args->outfile = arg;
             break;
         case 'v':
-            arguments->privkey = arg;
+            args->privkey = arg;
             break;
         case 'b':
-            arguments->pubkey = arg;
+            args->pubkey = arg;
             break;
         case ARGP_KEY_NO_ARGS:
             argp_usage(state);
         case ARGP_KEY_ARG:
-            if (state->arg_num > 0)
+            if (state->arg_num > 0 ||
+               (strcmp(arg, "private") && 
+               strcmp(arg, "public") && 
+               strcmp(arg, "encrypt") &&
+               strcmp(arg, "decrypt")))
                 argp_usage(state);
             else
-                arguments->cmd = arg;
+                args->cmd = arg;
             break;
         default:
             return ARGP_ERR_UNKNOWN;
@@ -62,15 +66,63 @@ static error_t parse_opt(int key, char *arg, struct argp_state *state)
 // argp parser
 static struct argp argp = {options, parse_opt, args_doc, doc};
 
+// command - private
+void cmd_private(struct args args)
+{
+    printf("private\n");
+}
+
+// command - public
+void cmd_public(struct args args)
+{
+    printf("public\n");
+}
+
+// command - encrypt
+void cmd_encrypt(struct args args)
+{
+    printf("encrypt\n");
+}
+
+// command - decrypt
+void cmd_decrypt(struct args args)
+{
+    printf("decrypt\n");
+}
+
 // main function
 void main(int argc, char **argv)
 {
-    struct arguments arguments;
+    struct args args;
 
-    arguments.infile = "-";
-    arguments.outfile = "-";
-    arguments.privkey = "-";
-    arguments.pubkey = "-";
+    args.cmd = NULL;
+    args.infile = NULL;
+    args.outfile = NULL;
+    args.privkey = NULL;
+    args.pubkey = NULL;
     
-    argp_parse (&argp, argc, argv, 0, 0, &arguments);
+    argp_parse (&argp, argc, argv, 0, 0, &args);
+
+    if (strcmp(args.cmd, "private") == 0)
+    {
+        cmd_private(args);
+    }
+    else if (strcmp(args.cmd, "public") == 0)
+    {
+        cmd_public(args);
+    }
+    else if (strcmp(args.cmd, "encrypt") == 0)
+    {
+        cmd_encrypt(args);
+    }
+    else if (strcmp(args.cmd, "decrypt") == 0)
+    {
+        cmd_decrypt(args);
+    }
+    else
+    {
+        exit(1);
+    }
+
+    exit(0);
 }
