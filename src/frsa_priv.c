@@ -36,7 +36,7 @@ RSA *readRSAPublic(char *infile)
 
     rsa = RSA_new();
 
-    PEM_read_RSA_PUBKEY(fp, &rsa, NULL, NULL);
+    PEM_read_RSAPublicKey(fp, &rsa, NULL, NULL);
 
     fclose(fp);
 
@@ -92,6 +92,27 @@ RSA *applyFPToRSA(RSA *rsa, FP *fp)
 
 void encryptRSA(RSA *rsa, char *infile, char *outfile)
 {
+    FILE *fp;
+    long size;
+    unsigned char *plaintext;
+    unsigned char *ciphertext;
+
+    fp = fopen(infile, "rb");
+    fseek(fp, 0L, SEEK_END);
+    size = ftell(fp);
+    rewind(fp);
+
+    plaintext = calloc(0, size+1);
+    fread(plaintext, size, 1, fp);
+    fclose(fp);
+
+    ciphertext = malloc(RSA_size(rsa));
+    RSA_public_encrypt(strlen(plaintext), plaintext, ciphertext, rsa, RSA_PKCS1_PADDING); 
+
+    fp = fopen(outfile, "wb");
+    fwrite(ciphertext, sizeof(ciphertext), 1, fp);
+    fclose(fp);
+
     return;
 }
 
