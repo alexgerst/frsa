@@ -1,5 +1,10 @@
 #include <frsa.h>
 
+FP *generateFP()
+{
+    return NULL;
+}
+
 RSA *generateRSA()
 {
     BIGNUM *bne;
@@ -16,61 +21,81 @@ RSA *generateRSA()
     return rsa;
 }
 
-RSA *readRSAFromFile(char *filename, int public)
+RSA *readRSAPublic(char *infile)
 {
     RSA *rsa;
     FILE *fp;
 
-    fp = fopen(filename, "rb");
+    fp = fopen(infile, "rb");
 
     if (fp == NULL)
     {
-        printf("Unable to open file %s \n", filename);
+        printf("Unable to open file %s \n", infile);
         return NULL;    
     }
 
     rsa = RSA_new();
 
-    if (public)
-    {
-        PEM_read_RSA_PUBKEY(fp, &rsa, NULL, NULL);
-    }
-    else
-    {
-        PEM_read_RSAPrivateKey(fp, &rsa, NULL, NULL);
-    }
+    PEM_read_RSA_PUBKEY(fp, &rsa, NULL, NULL);
 
-    free(fp);
+    fclose(fp);
 
     return rsa;
 }
 
-void *writeRSAPublicToFile(RSA *rsa, char *filename)
+RSA *readRSAPrivate(char *infile)
+{
+    RSA *rsa;
+    FILE *fp;
+
+    fp = fopen(infile, "rb");
+
+    if (fp == NULL)
+    {
+        printf("Unable to open file %s \n", infile);
+        return NULL;    
+    }
+
+    rsa = RSA_new();
+
+    PEM_read_RSAPrivateKey(fp, &rsa, NULL, NULL);
+
+    fclose(fp);
+
+    return rsa;
+}
+
+void writeRSAPublic(RSA *rsa, char *outfile)
 {
     BIO *bp;
 
-    bp = BIO_new_file(filename, "w+");
+    bp = BIO_new_file(outfile, "w+");
     PEM_write_bio_RSAPublicKey(bp, rsa);
 
     free(bp);
 }
 
-void *writeRSAPrivateToFile(RSA *rsa, char *filename)
+void writeRSAPrivate(RSA *rsa, char *outfile)
 {
     BIO *bp;
 
-    bp = BIO_new_file(filename, "w+");
+    bp = BIO_new_file(outfile, "w+");
     PEM_write_bio_RSAPrivateKey(bp, rsa, NULL, NULL, 0, NULL, NULL);
 
     free(bp);
 }
 
-FP *generateFP()
-{
-    return NULL;
-}
-
 RSA *applyFPToRSA(RSA *rsa, FP *fp)
 {
     return rsa;
+}
+
+void encryptRSA(RSA *rsa, char *infile, char *outfile)
+{
+    return;
+}
+
+void decryptRSA(RSA *rsa, char *infile, char *outfile)
+{
+    return;
 }

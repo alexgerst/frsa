@@ -85,7 +85,9 @@ void cmd_private(struct args args)
 
     rsa = generateRSA();
 
-    writeRSAPrivateToFile(rsa, args.outfile);
+    writeRSAPrivate(rsa, args.outfile);
+
+    free(rsa);
 }
 
 // command - public
@@ -100,6 +102,20 @@ void cmd_public(struct args args)
     {
         frsa_error("'public' command requires privkey");
     }
+
+    RSA *rsa;
+    FP *fp;
+
+    rsa = readRSAPrivate(args.privkey);
+
+    fp = generateFP();
+
+    rsa = applyFPToRSA(rsa, fp);
+
+    writeRSAPublic(rsa, args.outfile);
+
+    free(rsa);
+    free(fp);
 }
 
 // command - encrypt
@@ -120,6 +136,13 @@ void cmd_encrypt(struct args args)
         frsa_error("'encrypt' command requires pubkey");
     }
 
+    RSA *rsa;
+
+    rsa = readRSAPublic(args.pubkey);
+
+    encryptRSA(rsa, args.infile, args.outfile);
+
+    free(rsa);
 }
 
 // command - decrypt
@@ -139,7 +162,20 @@ void cmd_decrypt(struct args args)
     {
         frsa_error("'decrypt' command requires privkey");
     }
+   
+    RSA *rsa;
+    FP *fp;
 
+    rsa = readRSAPrivate(args.privkey);
+
+    fp = generateFP();
+
+    rsa = applyFPToRSA(rsa, fp);
+
+    decryptRSA(rsa, args.infile, args.outfile);
+
+    free(rsa);
+    free(fp);
 }
 
 // main function
@@ -175,6 +211,4 @@ void main(int argc, char **argv)
     {
         exit(1);
     }
-
-    exit(0);
 }

@@ -11,9 +11,12 @@ typedef struct
     int x;
 } FP;
 
-RSA *generateRSA();
-RSA *readRSAFromFile(char *filename, int public);
-void *writeRSAPublicToFile(RSA *rsa, char *filename);
-void *writeRSAPrivateToFile(RSA *rsa, char *filename);
 FP *generateFP();
-RSA *applyTPToRSA(RSA *rsa, FP *fp);
+RSA *generateRSA();
+RSA *readRSAPublic(char *infile);
+RSA *readRSAPrivate(char *infile);
+void writeRSAPublic(RSA *rsa, char *outfile);
+void writeRSAPrivate(RSA *rsa, char *outfile);
+RSA *applyFPToRSA(RSA *rsa, FP *fp);
+void encryptRSA(RSA *rsa, char *infile, char *outfile);
+void decryptRSA(RSA *rsa, char *infile, char *outfile);
