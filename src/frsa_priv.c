@@ -118,5 +118,26 @@ void encryptRSA(RSA *rsa, char *infile, char *outfile)
 
 void decryptRSA(RSA *rsa, char *infile, char *outfile)
 {
+    FILE *fp;
+    long size;
+    unsigned char *plaintext;
+    unsigned char *ciphertext;
+
+    fp = fopen(infile, "rb");
+    fseek(fp, 0L, SEEK_END);
+    size = ftell(fp);
+    rewind(fp);
+
+    ciphertext = calloc(0, size+1);
+    fread(ciphertext, size, 1, fp);
+    fclose(fp);
+
+    plaintext = malloc(RSA_size(rsa));
+    RSA_private_decrypt(strlen(ciphertext), ciphertext, plaintext, rsa, RSA_PKCS1_PADDING); 
+
+    fp = fopen(outfile, "wb");
+    fwrite(plaintext, sizeof(plaintext), 1, fp);
+    fclose(fp);
+
     return;
 }

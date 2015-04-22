@@ -34,5 +34,8 @@ frsa
 # Debug files
 *.dSYM/
 
-# Crypto files
+# Key files
 *.pem
+
+# Text files
+*.txt
